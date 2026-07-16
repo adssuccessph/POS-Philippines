@@ -1,4 +1,3 @@
-// Replace this after deploying the Cloudflare Worker.
 window.POS_CONFIG = {
-  API_BASE: 'https://REPLACE-WITH-YOUR-WORKER.workers.dev'
+  API_BASE: 'https://pos-philippines-api.ads-success-ph21.workers.dev'
 };
