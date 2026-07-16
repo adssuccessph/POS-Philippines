@@ -1,6 +1,6 @@
 const STATUS_OPTIONS = ['New Inquiry','Reviewing Requirements','Quotation Prepared','Waiting for Customer','Approved / Scheduled','Completed','Cancelled'];
 const REVIEW_STATUS = ['pending','approved','rejected'];
-const PBKDF2_ITERATIONS = 120000;
+const PBKDF2_ITERATIONS = 10000;
 const SESSION_DAYS = 7;
 
 export default {
