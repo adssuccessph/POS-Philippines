@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pos-philippines-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-16",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pos-philippines-db",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "pos-philippines-media"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "http://localhost:5500,http://127.0.0.1:5500,https://YOUR-GITHUB-USERNAME.github.io"
+  }
+}

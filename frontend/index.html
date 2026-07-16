@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="POS Philippines products, packages, customer inquiry tracking, and reviews.">
+<title>POS Philippines</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="site-header"><div class="container navbar">
+  <a class="brand" href="#home"><div id="brandLogo"></div><div id="brandName" class="brand-name"><span>POS</span> Philippines</div></a>
+  <button class="icon-button" id="menuToggle" aria-label="Open menu">☰</button>
+  <nav class="nav-links" id="navLinks"><a href="#home">Home</a><a href="#catalog">Products</a><a href="#packages">Packages</a><a href="#inquiry">Inquiry</a><a href="#tracking">Track</a><a href="#reviews">Reviews</a></nav>
+  <div class="nav-actions"><a class="btn btn-blue btn-sm" id="phoneButton" href="#">Contact</a><a class="btn btn-primary btn-sm" href="#inquiry">Get a Quote</a></div>
+</div></header>
+<main>
+<section id="home" class="hero"><div class="container hero-inner">
+  <div><span class="eyebrow">Affordable • Reliable • Built for Business</span><h1 id="heroTitle"><span class="red">Complete POS Solutions</span> for <span class="blue">Every Business</span></h1><p class="lead" id="heroSubtitle">Loading website details…</p>
+    <div class="hero-benefits"><div class="hero-benefit"><i>₱</i> Affordable prices</div><div class="hero-benefit"><i>✓</i> Quality products</div><div class="hero-benefit"><i>🎧</i> After-sales support</div></div>
+    <div class="hero-cta"><a href="#catalog" class="btn btn-primary">Browse Products</a><a href="#packages" class="btn btn-outline">View Packages</a><a href="#tracking" class="btn btn-blue">Track Inquiry</a></div>
+  </div>
+  <div class="hero-art" id="heroArt"><div class="hero-placeholder"><div class="hero-device"><div class="hero-screen"><div></div><div></div></div></div></div></div>
+</div></section>
+<section class="quick-strip"><div class="container quick-grid">
+  <div class="quick-item"><div class="quick-icon">₱</div><div><strong>One-Time Payment</strong><span>Available on selected packages.</span></div></div>
+  <div class="quick-item"><div class="quick-icon">✓</div><div><strong>Quality Products</strong><span>Trusted business solutions.</span></div></div>
+  <div class="quick-item"><div class="quick-icon">🎧</div><div><strong>After-Sales Support</strong><span>Training and assistance.</span></div></div>
+  <div class="quick-item"><div class="quick-icon">🚚</div><div><strong>Nationwide Service</strong><span>Serving businesses in the Philippines.</span></div></div>
+</div></section>
+<section id="catalog" class="section soft"><div class="container">
+  <div class="section-title"><span class="eyebrow">Product Catalog</span><h2>Browse by <span>Category</span> and Brand</h2><p>Explore available products and request a quotation for your business.</p></div>
+  <div id="categoryGrid" class="category-grid"><div class="empty" style="grid-column:1/-1">Loading categories…</div></div>
+  <div id="brandBar" class="brand-bar"></div>
+  <div class="section-title" style="text-align:left;margin:30px 0 20px"><span id="productContext" class="eyebrow">Products</span><h2 id="productTitle" style="font-size:32px">Available <span>Products</span></h2></div>
+  <div id="productGrid" class="product-grid"><div class="empty" style="grid-column:1/-1">Loading products…</div></div>
+</div></section>
+<section id="packages" class="section"><div class="container"><div class="section-title"><span class="eyebrow">Business Packages</span><h2>Featured <span>POS Packages</span></h2><p>Choose a ready-made package or request a custom solution.</p></div><div id="packageGrid" class="package-grid"><div class="empty" style="grid-column:1/-1">Loading packages…</div></div></div></section>
+<section class="service-band"><div class="container service-band-inner"><div><h3>Need a custom package or project quotation?</h3><p>Tell us what your business needs and our team will recommend the right solution.</p></div><a href="#inquiry" class="btn btn-gold">Send an Inquiry →</a></div></section>
+<section id="inquiry" class="section soft"><div class="container"><div class="section-title"><span class="eyebrow">Customer Portal</span><h2>Inquiry, Tracking, and <span>Reviews</span></h2><p>Receive a unique tracking number after submitting an inquiry.</p></div>
+  <div class="form-layout">
+    <section class="panel"><div class="panel-header"><div class="panel-icon">✎</div><div><h3>Send an Inquiry</h3><p class="sub">Request product details, pricing, or a custom package.</p></div></div>
+      <form id="inquiryForm" class="form-grid">
+        <div><label>Full Name *</label><input name="name" class="control" required></div><div><label>Business Name</label><input name="business" class="control"></div>
+        <div><label>Email *</label><input name="email" type="email" class="control" required></div><div><label>Contact Number *</label><input name="phone" class="control" required></div>
+        <div><label>Category *</label><select name="category_id" id="inqCategory" class="control" required></select></div><div><label>Preferred Brand</label><select name="brand_id" id="inqBrand" class="control"></select></div>
+        <div class="full"><label>Product or Service</label><select name="product_id" id="inqProduct" class="control"></select></div>
+        <div class="full"><label>Name of Sales Representative</label><input name="sales_representative" class="control" placeholder="Optional"></div>
+        <div class="full"><label>Message / Requirements *</label><textarea name="message" class="control" required placeholder="Tell us what your business needs."></textarea></div>
+        <div class="full"><button class="btn btn-primary btn-block">Submit Inquiry</button></div>
+      </form><div id="inquiryResult"></div>
+    </section>
+    <div class="stack">
+      <section id="tracking" class="panel"><div class="panel-header"><div class="panel-icon">⌕</div><div><h3>Track Your Inquiry</h3><p class="sub">Use the tracking number and registered email or mobile number.</p></div></div>
+        <form id="trackingForm"><div><label>Tracking Number *</label><input name="tracking" class="control" required placeholder="INQ-YYYYMMDD-XXXXXX"></div><div style="margin-top:10px"><label>Email or Mobile Number *</label><input name="contact" class="control" required></div><button class="btn btn-blue btn-block" style="margin-top:12px">Track Status</button></form><div id="trackingResult"></div>
+      </section>
+      <section id="reviews" class="panel"><div class="panel-header"><div class="panel-icon">★</div><div><h3>What Customers Say</h3><p class="sub">Only admin-approved reviews appear here.</p></div></div><div id="reviewList" class="review-list"></div><button id="openReview" class="btn btn-outline btn-block" style="margin-top:13px">Submit a Verified Review</button></section>
+    </div>
+  </div>
+</div></section>
+</main>
+<footer class="contact-area"><div class="container"><div class="footer-grid">
+  <div><div id="footerLogo"></div><h3 id="footerBusinessName">POS Philippines</h3><p id="footerTagline">Your Business. Our Solutions.</p><p>Products, packages, inquiries, tracking, and customer reviews in one website.</p></div>
+  <div><h3>Quick Links</h3><div class="footer-links"><a href="#catalog">Products and Brands</a><a href="#packages">Packages</a><a href="#inquiry">Send Inquiry</a><a href="#tracking">Track Inquiry</a><a href="./admin.html">Admin Login</a></div></div>
+  <div><h3>Contact Us</h3><div class="contact-list"><a id="facebookLink" href="#" target="_blank">Facebook Page</a><a id="emailLink" href="#">Email</a><a id="contactLink" href="#">Contact Number</a><p id="addressText"></p></div></div>
+</div><div class="footer-bottom">© <span id="year"></span> <span id="copyrightName">POS Philippines</span>.</div></div></footer>
+<div id="toast" class="toast"></div>
+<dialog id="productDialog" class="modal"><div class="modal-head"><h3 id="productDialogTitle">Product Details</h3><button class="modal-close" data-close="productDialog">×</button></div><div id="productDialogBody" class="modal-body"></div></dialog>
+<dialog id="reviewDialog" class="modal"><div class="modal-head"><h3>Submit a Verified Review</h3><button class="modal-close" data-close="reviewDialog">×</button></div><div class="modal-body">
+  <p class="muted small">A completed inquiry with matching email or mobile number is required.</p>
+  <form id="reviewForm" class="form-grid" enctype="multipart/form-data"><div><label>Tracking Number *</label><input name="tracking" class="control" required></div><div><label>Email or Mobile *</label><input name="contact" class="control" required></div><div><label>Your Name *</label><input name="name" class="control" required></div><div><label>Business / Role</label><input name="business" class="control"></div><div><label>Rating *</label><select name="rating" class="control"><option value="5">5 — Excellent</option><option value="4">4 — Very Good</option><option value="3">3 — Good</option><option value="2">2 — Fair</option><option value="1">1 — Poor</option></select></div><div><label>Optional Image</label><input name="image" type="file" accept="image/*" class="control"></div><div class="full"><label>Review *</label><textarea name="message" class="control" required></textarea></div><div class="full"><button class="btn btn-primary btn-block">Submit Review</button></div></form><div id="reviewResult"></div>
+</div></dialog>
+<script src="./config.js"></script><script src="./customer.js"></script>
+</body></html>
