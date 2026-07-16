@@ -17,6 +17,6 @@
     }
   ],
   "vars": {
-    ""ALLOWED_ORIGINS": "https://pos-philippines.pages.dev""
+    "ALLOWED_ORIGINS": "https://pos-philippines.pages.dev"
   }
 }
