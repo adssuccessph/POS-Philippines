@@ -1,0 +1,44 @@
+POS PHILIPPINES DEPLOYMENT CHECKLIST
+
+CLOUDFLARE
+[ ] npm install inside cloudflare-worker
+[ ] npx wrangler login
+[ ] Create D1 database
+[ ] Paste D1 database ID into wrangler.jsonc
+[ ] Create R2 bucket
+[ ] Replace GitHub username in ALLOWED_ORIGINS
+[ ] Run remote schema
+[ ] Run remote seed
+[ ] Deploy Worker
+[ ] Copy Worker URL
+
+GITHUB
+[ ] Paste Worker URL into frontend/config.js
+[ ] Create GitHub repository
+[ ] Upload the whole project
+[ ] Enable GitHub Pages using GitHub Actions
+[ ] Open customer website
+[ ] Open admin.html
+
+INITIAL LOGIN
+Username: admin
+Temporary password: POSAdmin2026!
+[ ] Create a new password on first login
+
+TESTING
+[ ] Add/edit product
+[ ] Upload product image
+[ ] Add/edit package and image
+[ ] Submit customer inquiry
+[ ] Track inquiry
+[ ] Update inquiry in admin
+[ ] Mark inquiry Completed
+[ ] Submit review
+[ ] Approve review
+
+DOMAIN LATER
+[ ] Add Squarespace domain in GitHub Pages
+[ ] Update DNS records in Squarespace
+[ ] Verify domain in GitHub
+[ ] Add domain to Cloudflare ALLOWED_ORIGINS
+[ ] Redeploy Worker
