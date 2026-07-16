@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420">
+  <rect width="640" height="420" rx="32" fill="#f5f8ff"/>
+  <ellipse cx="320" cy="354" rx="230" ry="22" fill="#d8e2f6"/>
+  <g transform="translate(95 94)">
+    <path d="M90 132L270 48v188L90 152z" fill="#0a4db1"/>
+    <rect x="20" y="115" width="80" height="55" rx="12" fill="#e31e2c"/>
+    <path d="M100 154l52 95h-52l-40-79z" fill="#27313c"/>
+    <path d="M304 67c45 35 45 115 0 150M339 38c70 56 70 162 0 218" fill="none" stroke="#2b79da" stroke-width="13" stroke-linecap="round"/>
+  </g>
+  <rect x="420" y="245" width="105" height="70" rx="10" fill="#2b3540"/>
+  <circle cx="447" cy="280" r="13" fill="#2272ff"/>
+  <rect x="475" y="270" width="33" height="8" rx="4" fill="#a6b4c7"/>
+  <rect x="475" y="287" width="25" height="8" rx="4" fill="#a6b4c7"/>
+  <text x="240" y="390" font-family="Arial,sans-serif" font-weight="700" font-size="25" fill="#0a3d91">Paging Systems</text>
+</svg>

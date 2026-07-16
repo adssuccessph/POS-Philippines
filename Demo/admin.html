@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>POS Philippines — Admin Demo</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<section id="loginPage" class="login-page">
+  <form id="loginForm" class="login-card">
+    <img class="login-logo" src="assets/logo-placeholder.svg" alt="POS Philippines">
+    <h1>Admin Demo</h1>
+    <p>Manage the website logo, details, categories, brands, products, packages, inquiries, tracking statuses, and customer reviews.</p>
+    <div class="hint"><strong>Demo password:</strong> POSAdmin2026!<br>This front-end password is only for presenting the demo and is not production security.</div>
+    <div class="field"><label for="adminPassword">Password</label><input id="adminPassword" class="control" type="password" required></div>
+    <button class="btn btn-blue btn-block" style="margin-top:14px" type="submit">Open Admin Dashboard</button>
+    <a href="index.html" class="btn btn-outline btn-block" style="margin-top:9px">Return to Website</a>
+    <div id="loginError"></div>
+  </form>
+</section>
+
+<div id="adminShell" class="admin-shell hidden">
+  <aside class="sidebar">
+    <div class="side-brand"><img id="sideLogo" src="assets/logo-placeholder.svg" alt="Logo"><div><strong>POS Philippines</strong><small>Website Admin</small></div></div>
+    <nav class="side-nav">
+      <button class="active" data-view="dashboard" type="button">▦ Dashboard</button>
+      <button data-view="settings" type="button">⚙ Website Settings</button>
+      <button data-view="categories" type="button">▣ Categories</button>
+      <button data-view="brands" type="button">◆ Brands</button>
+      <button data-view="products" type="button">▤ Products</button>
+      <button data-view="packages" type="button">▥ Packages</button>
+      <button data-view="inquiries" type="button">✉ Inquiries</button>
+      <button data-view="reviews" type="button">★ Reviews</button>
+      <button id="resetDemo" class="danger" type="button">↻ Reset Demo Data</button>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="top-actions"><a href="index.html" target="_blank">View Website ↗</a><button id="logoutBtn" class="logout" type="button">Log Out</button></div>
+    </header>
+
+    <main class="content">
+      <section id="view-dashboard" class="section-view active">
+        <div id="stats" class="dashboard-cards"></div>
+        <div class="grid-2">
+          <div class="panel"><div class="panel-head"><h2>Recent Inquiries</h2><button class="btn btn-outline btn-sm" data-open-view="inquiries">View All</button></div><div class="panel-body"><div id="recentInquiries"></div></div></div>
+          <div class="panel"><div class="panel-head"><h2>Pending Reviews</h2><button class="btn btn-outline btn-sm" data-open-view="reviews">Manage</button></div><div class="panel-body"><div id="pendingReviews"></div></div></div>
+        </div>
+      </section>
+
+      <section id="view-settings" class="section-view">
+        <div class="panel">
+          <div class="panel-head"><h2>Website Settings</h2></div>
+          <div class="panel-body">
+            <form id="settingsForm">
+              <div class="form-grid">
+                <div class="field"><label>Business Name</label><input id="setBusinessName" class="control" required></div>
+                <div class="field"><label>Tagline</label><input id="setTagline" class="control"></div>
+                <div class="field full"><label>Hero Headline</label><input id="setHeroTitle" class="control" required></div>
+                <div class="field full"><label>Hero Description</label><textarea id="setHeroSubtitle" class="control"></textarea></div>
+                <div class="field"><label>Email</label><input id="setEmail" class="control" type="email" required></div>
+                <div class="field"><label>Contact Number</label><input id="setPhone" class="control" required></div>
+                <div class="field"><label>Facebook Page Name</label><input id="setFacebook" class="control"></div>
+                <div class="field"><label>Facebook Page Link</label><input id="setFacebookUrl" class="control" type="url"></div>
+                <div class="field full"><label>Address / Service Area</label><input id="setAddress" class="control"></div>
+                <div class="field"><label>Logo URL or Path</label><input id="setLogo" class="control"><div class="help">You may use an image URL, relative path, or upload a file below.</div></div>
+                <div class="field"><label>Upload New Logo</label><input id="logoUpload" class="control" type="file" accept="image/*"></div>
+                <div class="field"><label>Hero Image URL or Path</label><input id="setHeroImage" class="control"></div>
+                <div class="field"><label>Upload Hero Image</label><input id="heroUpload" class="control" type="file" accept="image/*"></div>
+                <div class="field"><img id="logoPreview" class="image-preview" alt="Logo preview"></div>
+                <div class="field"><img id="heroPreview" class="image-preview" alt="Hero preview"></div>
+                <div class="field full"><button class="btn btn-blue" type="submit">Save Website Settings</button></div>
+              </div>
+            </form>
+            <div id="settingsNotice"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-categories" class="section-view">
+        <div class="grid-2">
+          <div class="panel"><div class="panel-head"><h2>Add / Edit Category</h2></div><div class="panel-body">
+            <form id="categoryForm"><input id="categoryId" type="hidden"><div class="form-grid">
+              <div class="field"><label>Category Name</label><input id="categoryName" class="control" required></div>
+              <div class="field"><label>Display Order</label><input id="categoryOrder" class="control" type="number" min="0" value="1"></div>
+              <div class="field full"><label>Image URL or Path</label><input id="categoryImage" class="control"></div>
+              <div class="field"><label>Upload Category Image</label><input id="categoryUpload" class="control" type="file" accept="image/*"></div>
+              <div class="field"><label class="check-row"><input id="categoryActive" type="checkbox" checked> Active on website</label></div>
+              <div class="field full actions-row"><button class="btn btn-blue" type="submit">Save Category</button><button id="categoryClear" class="btn btn-outline" type="button">Clear Form</button></div>
+            </div></form>
+          </div></div>
+          <div class="panel"><div class="panel-head"><h2>Category List</h2></div><div class="panel-body table-wrap"><table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead><tbody id="categoryTable"></tbody></table></div></div>
+        </div>
+      </section>
+
+      <section id="view-brands" class="section-view">
+        <div class="grid-2">
+          <div class="panel"><div class="panel-head"><h2>Add / Edit Brand</h2></div><div class="panel-body">
+            <form id="brandForm"><input id="brandId" type="hidden"><div class="form-grid">
+              <div class="field"><label>Category</label><select id="brandCategory" class="control" required></select></div>
+              <div class="field"><label>Brand Name</label><input id="brandName" class="control" required></div>
+              <div class="field"><label>Display Order</label><input id="brandOrder" class="control" type="number" min="0" value="1"></div>
+              <div class="field"><label>Brand Logo URL (Optional)</label><input id="brandLogo" class="control"></div>
+              <div class="field"><label class="check-row"><input id="brandActive" type="checkbox" checked> Active on website</label></div>
+              <div class="field full actions-row"><button class="btn btn-blue" type="submit">Save Brand</button><button id="brandClear" class="btn btn-outline" type="button">Clear Form</button></div>
+            </div></form>
+          </div></div>
+          <div class="panel"><div class="panel-head"><h2>Brand List</h2></div><div class="panel-body table-wrap"><table class="data-table"><thead><tr><th>Brand</th><th>Category</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead><tbody id="brandTable"></tbody></table></div></div>
+        </div>
+      </section>
+
+      <section id="view-products" class="section-view">
+        <div class="panel"><div class="panel-head"><h2>Add / Edit Product</h2></div><div class="panel-body">
+          <form id="productForm"><input id="productId" type="hidden"><div class="form-grid">
+            <div class="field"><label>Category</label><select id="productCategory" class="control" required></select></div>
+            <div class="field"><label>Brand</label><select id="productBrand" class="control"></select></div>
+            <div class="field full"><label>Product Name</label><input id="productName" class="control" required></div>
+            <div class="field"><label>Price (0 = Ask for Quote)</label><input id="productPrice" class="control" type="number" min="0" step="1" value="0"></div>
+            <div class="field"><label>Image URL or Path</label><input id="productImage" class="control"></div>
+            <div class="field"><label>Upload Product Image</label><input id="productUpload" class="control" type="file" accept="image/*"></div>
+            <div class="field"><label>Short Description</label><input id="productShort" class="control"></div>
+            <div class="field full"><label>Full Description</label><textarea id="productDescription" class="control"></textarea></div>
+            <div class="field"><label class="check-row"><input id="productFeatured" type="checkbox"> Featured product</label></div>
+            <div class="field"><label class="check-row"><input id="productAvailable" type="checkbox" checked> Available / visible</label></div>
+            <div class="field full actions-row"><button class="btn btn-blue" type="submit">Save Product</button><button id="productClear" class="btn btn-outline" type="button">Clear Form</button></div>
+          </div></form>
+        </div></div>
+        <div class="panel"><div class="panel-head"><h2>Product List</h2><div class="toolbar"><select id="productFilterCategory" class="control"><option value="all">All Categories</option></select><input id="productSearch" class="control" placeholder="Search product..."></div></div><div class="panel-body table-wrap"><table class="data-table"><thead><tr><th>Image</th><th>Product</th><th>Category / Brand</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody id="productTable"></tbody></table></div></div>
+      </section>
+
+      <section id="view-packages" class="section-view">
+        <div class="grid-2">
+          <div class="panel"><div class="panel-head"><h2>Add / Edit Package</h2></div><div class="panel-body">
+            <form id="packageForm"><input id="packageId" type="hidden"><div class="form-grid">
+              <div class="field full"><label>Package Name</label><input id="packageName" class="control" required></div>
+              <div class="field"><label>Subtitle</label><input id="packageSubtitle" class="control"></div>
+              <div class="field"><label>Price</label><input id="packagePrice" class="control" type="number" min="0" value="0"></div>
+              <div class="field full"><label>Inclusions (one item per line)</label><textarea id="packageInclusions" class="control"></textarea></div>
+              <div class="field"><label>Image URL or Path</label><input id="packageImage" class="control"></div>
+              <div class="field"><label class="check-row"><input id="packageFeatured" type="checkbox"> Most popular</label><label class="check-row"><input id="packageActive" type="checkbox" checked> Active</label></div>
+              <div class="field full actions-row"><button class="btn btn-blue" type="submit">Save Package</button><button id="packageClear" class="btn btn-outline" type="button">Clear Form</button></div>
+            </div></form>
+          </div></div>
+          <div class="panel"><div class="panel-head"><h2>Package List</h2></div><div class="panel-body table-wrap"><table class="data-table"><thead><tr><th>Name</th><th>Inclusions</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody id="packageTable"></tbody></table></div></div>
+        </div>
+      </section>
+
+      <section id="view-inquiries" class="section-view">
+        <div class="panel"><div class="panel-head"><h2>Customer Inquiries</h2><div class="toolbar"><select id="inquiryStatusFilter" class="control"><option value="all">All Statuses</option></select><input id="inquirySearch" class="control" placeholder="Search tracking, name, email..."></div></div><div class="panel-body table-wrap"><table class="data-table"><thead><tr><th>Tracking</th><th>Customer</th><th>Interest</th><th>Status</th><th>Last Updated</th><th>Actions</th></tr></thead><tbody id="inquiryTable"></tbody></table></div></div>
+      </section>
+
+      <section id="view-reviews" class="section-view">
+        <div class="panel"><div class="panel-head"><h2>Customer Reviews</h2><div class="toolbar"><select id="reviewFilter" class="control"><option value="all">All Reviews</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div></div><div class="panel-body table-wrap"><table class="data-table"><thead><tr><th>Customer</th><th>Rating</th><th>Review</th><th>Status</th><th>Actions</th></tr></thead><tbody id="reviewTable"></tbody></table></div></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="inquiryModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head"><h3>Update Inquiry</h3><button class="close" data-close="inquiryModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div id="inquiryDetails"></div>
+      <form id="inquiryUpdateForm"><input id="editInquiryId" type="hidden"><div class="form-grid">
+        <div class="field"><label>Status</label><select id="editInquiryStatus" class="control" required></select></div>
+        <div class="field"><label>Follow-up Date (Optional)</label><input id="editFollowup" class="control" type="date"></div>
+        <div class="field full"><label>Public Customer Update</label><textarea id="editPublicNote" class="control"></textarea></div>
+        <div class="field full"><label>Internal Admin Note</label><textarea id="editInternalNote" class="control"></textarea></div>
+        <div class="field full"><button class="btn btn-blue" type="submit">Save Inquiry Update</button></div>
+      </div></form>
+      <h4>Status History</h4><div id="inquiryHistory" class="status-history"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="shared.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
