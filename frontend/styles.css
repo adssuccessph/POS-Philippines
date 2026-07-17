@@ -20,3 +20,94 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit}
 @media(max-width:1050px){.nav-links{display:none;position:absolute;left:15px;right:15px;top:68px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow);flex-direction:column;align-items:stretch}.nav-links.open{display:flex}.icon-button{display:block;margin-left:auto}.nav-actions{display:none}.hero-inner{grid-template-columns:1fr}.hero-art{max-width:680px;margin:auto}.category-grid{grid-template-columns:repeat(3,1fr)}.product-grid{grid-template-columns:repeat(3,1fr)}.quick-grid{grid-template-columns:repeat(2,1fr)}.quick-item:nth-child(2){border-right:0}.admin-shell{grid-template-columns:1fr}.sidebar{position:static;height:auto;padding:9px}.side-brand{padding-bottom:8px}.side-nav{display:flex;overflow:auto}.side-nav button{white-space:nowrap}.content{padding:14px}.dashboard-cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.hero-inner{min-height:auto;padding:42px 0}.hero h1{font-size:42px}.hero .lead{font-size:16px}.hero-art{display:none}.category-grid{grid-template-columns:repeat(2,1fr)}.product-grid,.package-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}.quick-item{border-right:0;border-bottom:1px solid rgba(255,255,255,.12)}.form-layout,.footer-grid,.grid-2{grid-template-columns:1fr}.service-band-inner{align-items:flex-start;flex-direction:column}.section-title h2{font-size:33px}.section{padding:62px 0}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.admin-login{grid-template-columns:1fr}.login-info{padding:34px 22px}.login-info h1{font-size:37px}.login-points{grid-template-columns:1fr}.login-box-wrap{padding:20px 14px}.topbar{padding:0 13px}.topbar h1{font-size:18px}.top-actions a{display:none}.toolbar{width:100%;flex-direction:column;align-items:stretch}.panel-head{align-items:flex-start;flex-direction:column}}
 @media(max-width:460px){.container{width:min(100% - 20px,1220px)}.brand-name{font-size:17px}.brand-logo,.brand-fallback{width:44px;height:44px}.hero h1{font-size:36px}.hero-cta{flex-direction:column}.hero-cta .btn{width:100%}.category-card img,.category-card .category-placeholder{height:76px}.dashboard-cards{grid-template-columns:1fr}.content{padding:10px}.panel-body{padding:13px}.panel-head{padding:14px}}
+
+/* Messenger buttons */
+.btn-messenger{
+  background:linear-gradient(135deg,#00b2ff,#006aff);
+  color:#fff;
+}
+.btn-messenger:hover{
+  color:#fff;
+}
+.contact-list .messenger-contact-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  width:max-content;
+  padding:9px 12px;
+  margin:3px 0 5px;
+  border-radius:10px;
+  background:rgba(0,132,255,.16);
+  border:1px solid rgba(75,173,255,.35);
+  color:#fff;
+  font-weight:900;
+}
+.contact-list .messenger-contact-link::before{
+  content:"💬";
+}
+.messenger-float{
+  position:fixed;
+  right:max(18px,env(safe-area-inset-right));
+  bottom:max(18px,env(safe-area-inset-bottom));
+  z-index:1200;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:58px;
+  padding:8px 15px 8px 8px;
+  border-radius:999px;
+  color:#fff;
+  text-decoration:none;
+  background:linear-gradient(135deg,#00b2ff,#006aff 58%,#5b43ff);
+  box-shadow:0 14px 34px rgba(0,89,210,.34);
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+.messenger-float[hidden]{
+  display:none !important;
+}
+.messenger-float:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.02);
+  box-shadow:0 18px 38px rgba(0,89,210,.4);
+}
+.messenger-float-icon{
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#fff;
+}
+.messenger-float-icon svg{
+  width:27px;
+  height:27px;
+  fill:#0879f9;
+}
+.messenger-float-text{
+  display:grid;
+  line-height:1.05;
+}
+.messenger-float-text strong{
+  font-size:14px;
+}
+.messenger-float-text small{
+  margin-top:4px;
+  color:#e7f5ff;
+  font-size:10px;
+  font-weight:700;
+}
+@media(max-width:460px){
+  .messenger-float{
+    right:max(12px,env(safe-area-inset-right));
+    bottom:max(12px,env(safe-area-inset-bottom));
+    min-height:54px;
+    padding:7px 13px 7px 7px;
+  }
+  .messenger-float-icon{
+    width:40px;
+    height:40px;
+    flex-basis:40px;
+  }
+}
+
