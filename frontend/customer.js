@@ -20,9 +20,64 @@ function fallbackLogo(name='POS Philippines'){return `<div class="brand-fallback
 function imgOrPlaceholder(url,name,cls=''){return url?`<img class="${cls}" src="${esc(url)}" alt="${esc(name)}" loading="lazy">`:`<div class="image-placeholder">${esc(name)}</div>`}
 function category(id){return data.categories.find(x=>x.id===id)}function brand(id){return data.brands.find(x=>x.id===id)}function product(id){return data.products.find(x=>x.id===id)}
 function openDialog(id){const d=$('#'+id);if(d&&!d.open)d.showModal()}
+function messengerUrl(raw=''){
+  let value=String(raw||'').trim();
+  if(!value)return '';
+  if(!/^https?:\/\//i.test(value))value='https://'+value.replace(/^\/+/,'');
+  try{
+    const url=new URL(value);
+    const host=url.hostname.toLowerCase().replace(/^www\./,'');
+    if(host==='m.me')return `https://m.me/${url.pathname.replace(/^\/+|\/+$/g,'')}${url.search||''}`;
+    if(host==='messenger.com'){
+      const parts=url.pathname.split('/').filter(Boolean);
+      const target=parts[0]==='t'?parts[1]:parts[0];
+      return target?`https://m.me/${encodeURIComponent(decodeURIComponent(target))}`:value;
+    }
+    if(host==='facebook.com'||host==='fb.com'||host.endsWith('.facebook.com')){
+      const profileId=url.searchParams.get('id');
+      if(profileId)return `https://m.me/${encodeURIComponent(profileId)}`;
+      const parts=url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+      let target='';
+      if(parts[0]==='pages'&&parts.length>=3)target=parts[parts.length-1];
+      else if(parts[0]&&!['groups','watch','marketplace','reel','share','login','help'].includes(parts[0].toLowerCase()))target=parts[0];
+      return target?`https://m.me/${encodeURIComponent(target)}`:value;
+    }
+    return value;
+  }catch{
+    return value;
+  }
+}
+function updateMessengerLinks(settings,name){
+  const url=messengerUrl(settings.facebook_url);
+  const label=settings.facebook_name||name;
+  const footer=$('#facebookLink');
+  const hero=$('#heroMessengerButton');
+  const floating=$('#messengerFloat');
+  if(url){
+    footer.href=url;
+    footer.textContent=`Message ${label} on Messenger`;
+    footer.classList.add('messenger-contact-link');
+    footer.setAttribute('aria-label',`Message ${label} on Messenger`);
+    [hero,floating].forEach(link=>{
+      if(!link)return;
+      link.href=url;
+      link.hidden=false;
+      link.setAttribute('aria-label',`Message ${label} on Messenger`);
+    });
+  }else{
+    footer.href='#';
+    footer.textContent=`FB Page: ${label}`;
+    footer.classList.remove('messenger-contact-link');
+    [hero,floating].forEach(link=>{
+      if(!link)return;
+      link.href='#';
+      link.hidden=true;
+    });
+  }
+}
 async function load(showError=true){if(publicRefreshBusy)return;publicRefreshBusy=true;const previous={category:$('#inqCategory')?.value||'',brand:$('#inqBrand')?.value||'',product:$('#inqProduct')?.value||''};try{data=await api('/api/public/bootstrap');renderAll(previous)}catch(err){if(showError){notify(err.message,'error');$('#heroSubtitle').textContent=err.message;$('#categoryGrid').innerHTML=`<div class="empty" style="grid-column:1/-1">${esc(err.message)}</div>`;$('#productGrid').innerHTML='';$('#packageGrid').innerHTML=''}else console.warn('Customer auto-refresh failed:',err.message)}finally{publicRefreshBusy=false}}
 function renderAll(previous={}){renderSettings();const cats=data.categories.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order);if(!cats.some(x=>x.id===activeCategory))activeCategory=cats[0]?.id||'';renderCatalog();renderPackages();renderReviews();fillInquiryCategories(previous.category,previous.brand,previous.product)}
-function renderSettings(){const s=data.settings||{}, name=s.business_name||'POS Philippines';document.title=name;$('#brandName').innerHTML=esc(name).replace(/^POS/i,'<span>POS</span>');$('#brandLogo').innerHTML=s.logo_url?`<img class="brand-logo" src="${esc(s.logo_url)}" alt="${esc(name)}">`:fallbackLogo(name);$('#footerLogo').innerHTML=s.logo_url?`<img src="${esc(s.logo_url)}" alt="${esc(name)}" style="width:120px;height:80px;object-fit:contain;background:#fff;border-radius:13px;padding:5px;margin-bottom:12px">`:fallbackLogo(name);$('#footerBusinessName').textContent=name;$('#footerTagline').textContent=s.tagline||'Your Business. Our Solutions.';$('#copyrightName').textContent=name;$('#year').textContent=new Date().getFullYear();$('#heroSubtitle').textContent=s.hero_subtitle||'POS Systems, CCTV, Biometrics, Solar and more. Quality products, affordable prices, and reliable after-sales support.';if(s.hero_title)$('#heroTitle').textContent=s.hero_title;if(s.hero_image_url)$('#heroArt').innerHTML=`<img src="${esc(s.hero_image_url)}" alt="${esc(name)}">`;$('#phoneButton').textContent=s.phone?`☎ ${s.phone}`:'Contact';$('#phoneButton').href=s.phone?`tel:${s.phone}`:'#inquiry';$('#facebookLink').textContent=`FB Page: ${s.facebook_name||name}`;$('#facebookLink').href=s.facebook_url||'#';$('#emailLink').textContent=`Email: ${s.email||''}`;$('#emailLink').href=s.email?`mailto:${s.email}`:'#';$('#contactLink').textContent=`Contact #: ${s.phone||''}`;$('#contactLink').href=s.phone?`tel:${s.phone}`:'#';$('#addressText').textContent=s.address||''}
+function renderSettings(){const s=data.settings||{}, name=s.business_name||'POS Philippines';document.title=name;$('#brandName').innerHTML=esc(name).replace(/^POS/i,'<span>POS</span>');$('#brandLogo').innerHTML=s.logo_url?`<img class="brand-logo" src="${esc(s.logo_url)}" alt="${esc(name)}">`:fallbackLogo(name);$('#footerLogo').innerHTML=s.logo_url?`<img src="${esc(s.logo_url)}" alt="${esc(name)}" style="width:120px;height:80px;object-fit:contain;background:#fff;border-radius:13px;padding:5px;margin-bottom:12px">`:fallbackLogo(name);$('#footerBusinessName').textContent=name;$('#footerTagline').textContent=s.tagline||'Your Business. Our Solutions.';$('#copyrightName').textContent=name;$('#year').textContent=new Date().getFullYear();$('#heroSubtitle').textContent=s.hero_subtitle||'POS Systems, CCTV, Biometrics, Solar and more. Quality products, affordable prices, and reliable after-sales support.';if(s.hero_title)$('#heroTitle').textContent=s.hero_title;if(s.hero_image_url)$('#heroArt').innerHTML=`<img src="${esc(s.hero_image_url)}" alt="${esc(name)}">`;$('#phoneButton').textContent=s.phone?`☎ ${s.phone}`:'Contact';$('#phoneButton').href=s.phone?`tel:${s.phone}`:'#inquiry';updateMessengerLinks(s,name);$('#emailLink').textContent=`Email: ${s.email||''}`;$('#emailLink').href=s.email?`mailto:${s.email}`:'#';$('#contactLink').textContent=`Contact #: ${s.phone||''}`;$('#contactLink').href=s.phone?`tel:${s.phone}`:'#';$('#addressText').textContent=s.address||''}
 function renderCatalog(){const cats=data.categories.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order);if(!cats.some(x=>x.id===activeCategory))activeCategory=cats[0]?.id||'';$('#categoryGrid').innerHTML=cats.map(c=>`<button class="category-card ${c.id===activeCategory?'active':''}" data-cat="${c.id}">${c.image_url?`<img src="${esc(c.image_url)}" alt="${esc(c.name)}" loading="lazy">`:`<div class="category-placeholder">${esc(c.name).slice(0,4).toUpperCase()}</div>`}<strong>${esc(c.name)}</strong></button>`).join('')||'<div class="empty" style="grid-column:1/-1">No categories available.</div>';$$('#categoryGrid [data-cat]').forEach(b=>b.onclick=()=>{activeCategory=b.dataset.cat;activeBrand='all';renderCatalog()});const brands=data.brands.filter(x=>x.is_active&&x.category_id===activeCategory).sort((a,b)=>a.display_order-b.display_order);$('#brandBar').innerHTML=`<button class="brand-filter ${activeBrand==='all'?'active':''}" data-brand="all">All Brands</button>`+brands.map(b=>`<button class="brand-filter ${activeBrand===b.id?'active':''}" data-brand="${b.id}">${esc(b.name)}</button>`).join('');$$('#brandBar [data-brand]').forEach(b=>b.onclick=()=>{activeBrand=b.dataset.brand;renderCatalog()});const c=category(activeCategory), products=data.products.filter(x=>x.is_available&&x.category_id===activeCategory&&(activeBrand==='all'||x.brand_id===activeBrand));$('#productContext').textContent=(c?.name||'Products')+(activeBrand!=='all'?' • '+(brand(activeBrand)?.name||''):'');$('#productTitle').innerHTML=esc(c?.name||'Available')+' <span>Products</span>';$('#productGrid').innerHTML=products.map(p=>`<article class="product-card"><div class="product-image">${imgOrPlaceholder(p.image_url,p.name)}</div><div class="product-body"><div class="product-meta">${esc(brand(p.brand_id)?.name||'POS Philippines')}</div><h3>${esc(p.name)}</h3><p>${esc(p.short_description||p.description||'')}</p><div class="product-bottom"><span class="price">${peso(p.price)}</span><button class="btn btn-blue btn-sm" data-product="${p.id}">View Details</button></div></div></article>`).join('')||'<div class="empty" style="grid-column:1/-1">No products available in this category yet.</div>';$$('#productGrid [data-product]').forEach(b=>b.onclick=()=>showProduct(b.dataset.product))}
 function showProduct(id){const p=product(id);if(!p)return;$('#productDialogTitle').textContent=p.name;$('#productDialogBody').innerHTML=`<div style="display:grid;grid-template-columns:minmax(180px,.7fr) 1.3fr;gap:18px;align-items:start"><div style="height:220px">${imgOrPlaceholder(p.image_url,p.name)}</div><div><span class="eyebrow">${esc(category(p.category_id)?.name||'')} • ${esc(brand(p.brand_id)?.name||'')}</span><h2>${esc(p.name)}</h2><div class="price">${peso(p.price)}</div><p class="muted" style="line-height:1.7">${esc(p.description||p.short_description||'')}</p><a href="#inquiry" class="btn btn-primary" id="inquireProduct">Inquire About This Product</a></div></div>`;openDialog('productDialog');$('#inquireProduct').onclick=()=>{$('#productDialog').close();setTimeout(()=>{$('#inquiry').scrollIntoView();$('#inqCategory').value=p.category_id;fillInquiryBrands(p.brand_id,p.id)},100)}}
 function renderPackages(){const list=data.packages.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order);$('#packageGrid').innerHTML=list.map(p=>`<article class="package-card panel ${p.is_featured?'popular':''}">${p.is_featured?'<span class="popular-tag">MOST POPULAR</span>':''}<div class="package-image">${imgOrPlaceholder(p.image_url,p.name)}</div><span class="eyebrow">${esc(p.subtitle||'POS Package')}</span><h3>${esc(p.name)}</h3><div class="package-price">${peso(p.price)}</div><ul class="package-list">${(p.inclusions||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><a href="#inquiry" class="btn ${p.is_featured?'btn-blue':'btn-outline'} btn-block">Request This Package</a></article>`).join('')||'<div class="empty" style="grid-column:1/-1">No packages available.</div>'}
