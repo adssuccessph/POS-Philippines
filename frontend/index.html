@@ -72,6 +72,13 @@
 </a>
 <div id="toast" class="toast"></div>
 <dialog id="productDialog" class="modal"><div class="modal-head"><h3 id="productDialogTitle">Product Details</h3><button class="modal-close" data-close="productDialog">×</button></div><div id="productDialogBody" class="modal-body"></div></dialog>
+<dialog id="imageViewer" class="image-viewer" aria-label="Full-size product image" aria-modal="true">
+  <div class="image-viewer-shell">
+    <div class="image-viewer-header"><div class="image-viewer-heading"><strong id="viewerCaption">Product image</strong><small>Pinch or use + / − to zoom • drag to move</small></div><button type="button" id="viewerClose" class="image-viewer-close" aria-label="Close image viewer">×</button></div>
+    <div id="viewerStage" class="image-viewer-stage"><img id="viewerImage" alt="" draggable="false"></div>
+    <div class="image-viewer-controls" aria-label="Image zoom controls"><button type="button" id="viewerZoomOut" aria-label="Zoom out">−</button><output id="viewerZoomValue" aria-live="off">100%</output><button type="button" id="viewerZoomIn" aria-label="Zoom in">+</button><button type="button" id="viewerZoomReset" class="image-viewer-fit" aria-label="Reset zoom to fit">Fit image</button></div>
+  </div>
+</dialog>
 <dialog id="reviewDialog" class="modal"><div class="modal-head"><h3>Submit a Verified Review</h3><button class="modal-close" data-close="reviewDialog">×</button></div><div class="modal-body">
   <p class="muted small">A completed inquiry with matching email or mobile number is required.</p>
   <form id="reviewForm" class="form-grid" enctype="multipart/form-data"><div><label>Tracking Number *</label><input name="tracking" class="control" required></div><div><label>Email or Mobile *</label><input name="contact" class="control" required></div><div><label>Your Name *</label><input name="name" class="control" required></div><div><label>Business / Role</label><input name="business" class="control"></div><div><label>Rating *</label><select name="rating" class="control"><option value="5">5 — Excellent</option><option value="4">4 — Very Good</option><option value="3">3 — Good</option><option value="2">2 — Fair</option><option value="1">1 — Poor</option></select></div><div><label>Optional Image</label><input name="image" type="file" accept="image/*" class="control"></div><div class="full"><label>Review *</label><textarea name="message" class="control" required></textarea></div><div class="full"><button class="btn btn-primary btn-block">Submit Review</button></div></form><div id="reviewResult"></div>

@@ -1,0 +1,42 @@
+POS PHILIPPINES — PRODUCT & PACKAGE IMAGE ZOOM UPDATE
+=================================================
+
+WHAT WAS CHANGED
+----------------
+Frontend only, no change to Cloudflare Worker, D1 database, R2 images, or existing records.
+
+- frontend/customer.js
+  - Opens a fullscreen image viewer when a product card image is clicked.
+  - Opens the same viewer from Package cards and the Product Details popup.
+  - Zoom +, Zoom -, Fit image, mouse wheel, double click, drag, and mobile pinch-to-zoom.
+  - Close button and Escape key; the underlying Product Details popup stays open.
+
+- frontend/index.html
+  - Added the image viewer dialog and controls.
+
+- frontend/styles.css
+  - Added click-to-view indicator, viewer styles, and responsive Product Details layout.
+
+DEPLOY TO GITHUB / CLOUDFLARE
+-----------------------------
+1. Extract the updated ZIP on your PC. DO NOT upload the ZIP itself into the repo as a new file.
+2. In your existing GitHub repository, replace these three files IN THE SAME LOCATIONS:
+     frontend/customer.js
+     frontend/index.html
+     frontend/styles.css
+3. Commit the changes to your deployment branch (usually main).
+4. If Cloudflare Pages is connected to your GitHub repository, allow its usual automatic deployment to finish.
+   If you deploy through GitHub Pages Actions instead, check the Actions tab.
+5. Refresh the live website (Ctrl+Shift+R), then click on a Product image, a Package image,
+   and the image inside Product Details to check the zoom dialog.
+
+No new API keys, npm packages, database schema changes, or additional Cloudflare services are needed.
+
+TESTS PERFORMED
+---------------
+- JavaScript syntax checked in Node.
+- Chromium desktop and mobile smoke tests with mock catalog data.
+- Product/Package image open, zoom+, zoom reset, close, Escape, and nested Product Details tested.
+- Mobile two-finger pinch tested successfully.
+
+Note: Tests used mock catalog data. Check the live Cloudflare site after deployment.

@@ -18,6 +18,12 @@ function notify(msg,type=''){const t=$('#toast');t.textContent=msg;t.className='
 async function api(path,options={}){if(!API||API.includes('REPLACE-WITH'))throw new Error('API is not configured yet. Open config.js and add the Cloudflare Worker URL.');const res=await fetch(API+path,{...options,headers:{...(options.body instanceof FormData?{}:{'Content-Type':'application/json'}),...(options.headers||{})}});let body={};try{body=await res.json()}catch{}if(!res.ok)throw new Error(body.error||`Request failed (${res.status})`);return body}
 function fallbackLogo(name='POS Philippines'){return `<div class="brand-fallback">${esc(name).split(/\s+/).map(x=>x[0]).join('').slice(0,3).toUpperCase()}</div>`}
 function imgOrPlaceholder(url,name,cls=''){return url?`<img class="${cls}" src="${esc(url)}" alt="${esc(name)}" loading="lazy">`:`<div class="image-placeholder">${esc(name)}</div>`}
+// The same image URL is reused for the enlargement; no backend changes are needed.
+function zoomableImage(url,name){
+  if(!url)return imgOrPlaceholder(url,name);
+  return `<button type="button" class="zoomable-image" data-image-zoom="${esc(url)}" data-image-name="${esc(name)}" aria-label="View larger image of ${esc(name)}" title="Click to enlarge image"><img src="${esc(url)}" alt="${esc(name)}" loading="lazy"><span class="zoomable-hint" aria-hidden="true">⌕ View image</span></button>`;
+}
+
 function category(id){return data.categories.find(x=>x.id===id)}function brand(id){return data.brands.find(x=>x.id===id)}function product(id){return data.products.find(x=>x.id===id)}
 function openDialog(id){const d=$('#'+id);if(d&&!d.open)d.showModal()}
 function messengerUrl(raw=''){
@@ -78,9 +84,15 @@ function updateMessengerLinks(settings,name){
 async function load(showError=true){if(publicRefreshBusy)return;publicRefreshBusy=true;const previous={category:$('#inqCategory')?.value||'',brand:$('#inqBrand')?.value||'',product:$('#inqProduct')?.value||''};try{data=await api('/api/public/bootstrap');renderAll(previous)}catch(err){if(showError){notify(err.message,'error');$('#heroSubtitle').textContent=err.message;$('#categoryGrid').innerHTML=`<div class="empty" style="grid-column:1/-1">${esc(err.message)}</div>`;$('#productGrid').innerHTML='';$('#packageGrid').innerHTML=''}else console.warn('Customer auto-refresh failed:',err.message)}finally{publicRefreshBusy=false}}
 function renderAll(previous={}){renderSettings();const cats=data.categories.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order);if(!cats.some(x=>x.id===activeCategory))activeCategory=cats[0]?.id||'';renderCatalog();renderPackages();renderReviews();fillInquiryCategories(previous.category,previous.brand,previous.product)}
 function renderSettings(){const s=data.settings||{}, name=s.business_name||'POS Philippines';document.title=name;$('#brandName').innerHTML=esc(name).replace(/^POS/i,'<span>POS</span>');$('#brandLogo').innerHTML=s.logo_url?`<img class="brand-logo" src="${esc(s.logo_url)}" alt="${esc(name)}">`:fallbackLogo(name);$('#footerLogo').innerHTML=s.logo_url?`<img src="${esc(s.logo_url)}" alt="${esc(name)}" style="width:120px;height:80px;object-fit:contain;background:#fff;border-radius:13px;padding:5px;margin-bottom:12px">`:fallbackLogo(name);$('#footerBusinessName').textContent=name;$('#footerTagline').textContent=s.tagline||'Your Business. Our Solutions.';$('#copyrightName').textContent=name;$('#year').textContent=new Date().getFullYear();$('#heroSubtitle').textContent=s.hero_subtitle||'POS Systems, CCTV, Biometrics, Solar and more. Quality products, affordable prices, and reliable after-sales support.';if(s.hero_title)$('#heroTitle').textContent=s.hero_title;if(s.hero_image_url)$('#heroArt').innerHTML=`<img src="${esc(s.hero_image_url)}" alt="${esc(name)}">`;$('#phoneButton').textContent=s.phone?`☎ ${s.phone}`:'Contact';$('#phoneButton').href=s.phone?`tel:${s.phone}`:'#inquiry';updateMessengerLinks(s,name);$('#emailLink').textContent=`Email: ${s.email||''}`;$('#emailLink').href=s.email?`mailto:${s.email}`:'#';$('#contactLink').textContent=`Contact #: ${s.phone||''}`;$('#contactLink').href=s.phone?`tel:${s.phone}`:'#';$('#addressText').textContent=s.address||''}
-function renderCatalog(){const cats=data.categories.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order);if(!cats.some(x=>x.id===activeCategory))activeCategory=cats[0]?.id||'';$('#categoryGrid').innerHTML=cats.map(c=>`<button class="category-card ${c.id===activeCategory?'active':''}" data-cat="${c.id}">${c.image_url?`<img src="${esc(c.image_url)}" alt="${esc(c.name)}" loading="lazy">`:`<div class="category-placeholder">${esc(c.name).slice(0,4).toUpperCase()}</div>`}<strong>${esc(c.name)}</strong></button>`).join('')||'<div class="empty" style="grid-column:1/-1">No categories available.</div>';$$('#categoryGrid [data-cat]').forEach(b=>b.onclick=()=>{activeCategory=b.dataset.cat;activeBrand='all';renderCatalog()});const brands=data.brands.filter(x=>x.is_active&&x.category_id===activeCategory).sort((a,b)=>a.display_order-b.display_order);$('#brandBar').innerHTML=`<button class="brand-filter ${activeBrand==='all'?'active':''}" data-brand="all">All Brands</button>`+brands.map(b=>`<button class="brand-filter ${activeBrand===b.id?'active':''}" data-brand="${b.id}">${esc(b.name)}</button>`).join('');$$('#brandBar [data-brand]').forEach(b=>b.onclick=()=>{activeBrand=b.dataset.brand;renderCatalog()});const c=category(activeCategory), products=data.products.filter(x=>x.is_available&&x.category_id===activeCategory&&(activeBrand==='all'||x.brand_id===activeBrand));$('#productContext').textContent=(c?.name||'Products')+(activeBrand!=='all'?' • '+(brand(activeBrand)?.name||''):'');$('#productTitle').innerHTML=esc(c?.name||'Available')+' <span>Products</span>';$('#productGrid').innerHTML=products.map(p=>`<article class="product-card"><div class="product-image">${imgOrPlaceholder(p.image_url,p.name)}</div><div class="product-body"><div class="product-meta">${esc(brand(p.brand_id)?.name||'POS Philippines')}</div><h3>${esc(p.name)}</h3><p>${esc(p.short_description||p.description||'')}</p><div class="product-bottom"><span class="price">${peso(p.price)}</span><button class="btn btn-blue btn-sm" data-product="${p.id}">View Details</button></div></div></article>`).join('')||'<div class="empty" style="grid-column:1/-1">No products available in this category yet.</div>';$$('#productGrid [data-product]').forEach(b=>b.onclick=()=>showProduct(b.dataset.product))}
-function showProduct(id){const p=product(id);if(!p)return;$('#productDialogTitle').textContent=p.name;$('#productDialogBody').innerHTML=`<div style="display:grid;grid-template-columns:minmax(180px,.7fr) 1.3fr;gap:18px;align-items:start"><div style="height:220px">${imgOrPlaceholder(p.image_url,p.name)}</div><div><span class="eyebrow">${esc(category(p.category_id)?.name||'')} • ${esc(brand(p.brand_id)?.name||'')}</span><h2>${esc(p.name)}</h2><div class="price">${peso(p.price)}</div><p class="muted" style="line-height:1.7">${esc(p.description||p.short_description||'')}</p><a href="#inquiry" class="btn btn-primary" id="inquireProduct">Inquire About This Product</a></div></div>`;openDialog('productDialog');$('#inquireProduct').onclick=()=>{$('#productDialog').close();setTimeout(()=>{$('#inquiry').scrollIntoView();$('#inqCategory').value=p.category_id;fillInquiryBrands(p.brand_id,p.id)},100)}}
-function renderPackages(){const list=data.packages.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order);$('#packageGrid').innerHTML=list.map(p=>`<article class="package-card panel ${p.is_featured?'popular':''}">${p.is_featured?'<span class="popular-tag">MOST POPULAR</span>':''}<div class="package-image">${imgOrPlaceholder(p.image_url,p.name)}</div><span class="eyebrow">${esc(p.subtitle||'POS Package')}</span><h3>${esc(p.name)}</h3><div class="package-price">${peso(p.price)}</div><ul class="package-list">${(p.inclusions||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><a href="#inquiry" class="btn ${p.is_featured?'btn-blue':'btn-outline'} btn-block">Request This Package</a></article>`).join('')||'<div class="empty" style="grid-column:1/-1">No packages available.</div>'}
+function renderCatalog(){const cats=data.categories.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order);if(!cats.some(x=>x.id===activeCategory))activeCategory=cats[0]?.id||'';$('#categoryGrid').innerHTML=cats.map(c=>`<button class="category-card ${c.id===activeCategory?'active':''}" data-cat="${c.id}">${c.image_url?`<img src="${esc(c.image_url)}" alt="${esc(c.name)}" loading="lazy">`:`<div class="category-placeholder">${esc(c.name).slice(0,4).toUpperCase()}</div>`}<strong>${esc(c.name)}</strong></button>`).join('')||'<div class="empty" style="grid-column:1/-1">No categories available.</div>';$$('#categoryGrid [data-cat]').forEach(b=>b.onclick=()=>{activeCategory=b.dataset.cat;activeBrand='all';renderCatalog()});const brands=data.brands.filter(x=>x.is_active&&x.category_id===activeCategory).sort((a,b)=>a.display_order-b.display_order);$('#brandBar').innerHTML=`<button class="brand-filter ${activeBrand==='all'?'active':''}" data-brand="all">All Brands</button>`+brands.map(b=>`<button class="brand-filter ${activeBrand===b.id?'active':''}" data-brand="${b.id}">${esc(b.name)}</button>`).join('');$$('#brandBar [data-brand]').forEach(b=>b.onclick=()=>{activeBrand=b.dataset.brand;renderCatalog()});const c=category(activeCategory), products=data.products.filter(x=>x.is_available&&x.category_id===activeCategory&&(activeBrand==='all'||x.brand_id===activeBrand));$('#productContext').textContent=(c?.name||'Products')+(activeBrand!=='all'?' • '+(brand(activeBrand)?.name||''):'');$('#productTitle').innerHTML=esc(c?.name||'Available')+' <span>Products</span>';$('#productGrid').innerHTML=products.map(p=>`<article class="product-card"><div class="product-image">${zoomableImage(p.image_url,p.name)}</div><div class="product-body"><div class="product-meta">${esc(brand(p.brand_id)?.name||'POS Philippines')}</div><h3>${esc(p.name)}</h3><p>${esc(p.short_description||p.description||'')}</p><div class="product-bottom"><span class="price">${peso(p.price)}</span><button class="btn btn-blue btn-sm" data-product="${p.id}">View Details</button></div></div></article>`).join('')||'<div class="empty" style="grid-column:1/-1">No products available in this category yet.</div>';$$('#productGrid [data-product]').forEach(b=>b.onclick=()=>showProduct(b.dataset.product))}
+function showProduct(id){
+  const p=product(id);if(!p)return;
+  $('#productDialogTitle').textContent=p.name;
+  $('#productDialogBody').innerHTML=`<div class="product-detail-layout"><div class="product-detail-image">${zoomableImage(p.image_url,p.name)}</div><div class="product-detail-info"><span class="eyebrow">${esc(category(p.category_id)?.name||'')} • ${esc(brand(p.brand_id)?.name||'')}</span><h2>${esc(p.name)}</h2><div class="price">${peso(p.price)}</div><p class="muted product-detail-description">${esc(p.description||p.short_description||'')}</p><a href="#inquiry" class="btn btn-primary" id="inquireProduct">Inquire About This Product</a></div></div>`;
+  openDialog('productDialog');
+  $('#inquireProduct').onclick=()=>{$('#productDialog').close();setTimeout(()=>{$('#inquiry').scrollIntoView();$('#inqCategory').value=p.category_id;fillInquiryBrands(p.brand_id,p.id)},100)};
+}
+function renderPackages(){const list=data.packages.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order);$('#packageGrid').innerHTML=list.map(p=>`<article class="package-card panel ${p.is_featured?'popular':''}">${p.is_featured?'<span class="popular-tag">MOST POPULAR</span>':''}<div class="package-image">${zoomableImage(p.image_url,p.name)}</div><span class="eyebrow">${esc(p.subtitle||'POS Package')}</span><h3>${esc(p.name)}</h3><div class="package-price">${peso(p.price)}</div><ul class="package-list">${(p.inclusions||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><a href="#inquiry" class="btn ${p.is_featured?'btn-blue':'btn-outline'} btn-block">Request This Package</a></article>`).join('')||'<div class="empty" style="grid-column:1/-1">No packages available.</div>'}
 function renderReviews(){const list=data.reviews||[];$('#reviewList').innerHTML=list.map(r=>`<article class="review-card">${r.image_url?`<img src="${esc(r.image_url)}" alt="Review image" loading="lazy">`:''}<div class="stars">${'★'.repeat(Number(r.rating))}${'☆'.repeat(5-Number(r.rating))}</div><h4>${esc(r.name)} ${r.business?`<span class="small muted">• ${esc(r.business)}</span>`:''}</h4><p>${esc(r.message)}</p></article>`).join('')||'<div class="empty">No approved customer reviews yet.</div>'}
 function fillInquiryCategories(selectedCategory='',selectedBrand='',selectedProduct=''){const f=$('#inqCategory');f.innerHTML='<option value="">Select category</option>'+data.categories.filter(x=>x.is_active).sort((a,b)=>a.display_order-b.display_order).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');if(selectedCategory&&data.categories.some(c=>c.id===selectedCategory&&c.is_active))f.value=selectedCategory;fillInquiryBrands(selectedBrand,selectedProduct)}
 function fillInquiryBrands(selectedBrand='',selectedProduct=''){const cid=$('#inqCategory').value, f=$('#inqBrand'), list=data.brands.filter(x=>x.is_active&&x.category_id===cid);f.innerHTML='<option value="">Any brand</option>'+list.map(b=>`<option value="${b.id}">${esc(b.name)}</option>`).join('');if(selectedBrand)f.value=selectedBrand;fillInquiryProducts(selectedProduct)}
@@ -90,6 +102,94 @@ function renderTrackingResult(q){$('#trackingResult').innerHTML=`<div class="res
 async function refreshTrackedInquiry(showError=false){if(!trackedPayload||trackingRefreshBusy||document.visibilityState!=='visible')return;trackingRefreshBusy=true;try{const q=await api('/api/inquiries/track',{method:'POST',body:JSON.stringify(trackedPayload)});renderTrackingResult(q)}catch(err){if(showError)$('#trackingResult').innerHTML=`<div class="result-box" style="background:#fff0f0;border-color:#efc2c2"><b>${esc(err.message)}</b></div>`;else console.warn('Tracking auto-refresh failed:',err.message)}finally{trackingRefreshBusy=false}}
 async function trackInquiry(e){e.preventDefault();trackedPayload=Object.fromEntries(new FormData(e.currentTarget));await refreshTrackedInquiry(true)}
 async function submitReview(e){e.preventDefault();const f=e.currentTarget, fd=new FormData(f);try{let image_url='';const file=fd.get('image');if(file&&file.size){const up=new FormData();up.append('file',file);up.append('tracking',fd.get('tracking'));up.append('contact',fd.get('contact'));const result=await api('/api/public/review-upload',{method:'POST',body:up});image_url=result.url}const payload={tracking:fd.get('tracking'),contact:fd.get('contact'),name:fd.get('name'),business:fd.get('business'),rating:Number(fd.get('rating')),message:fd.get('message'),image_url};await api('/api/reviews',{method:'POST',body:JSON.stringify(payload)});$('#reviewResult').innerHTML='<div class="result-box"><b>Review submitted.</b><p class="small">It will appear after admin approval.</p></div>';f.reset();notify('Review sent for approval.','success')}catch(err){$('#reviewResult').innerHTML=`<div class="result-box" style="background:#fff0f0;border-color:#efc2c2">${esc(err.message)}</div>`}}
+// Full-screen viewer: zoom buttons, wheel, double-click, pointer dragging and two-finger pinch.
+const imageViewer=$('#imageViewer');
+const viewerImage=$('#viewerImage');
+const viewerStage=$('#viewerStage');
+const zoomReadout=$('#viewerZoomValue');
+const zoomInButton=$('#viewerZoomIn');
+const zoomOutButton=$('#viewerZoomOut');
+let viewerScale=1, viewerX=0, viewerY=0;
+const viewerPointers=new Map();
+let pinchStartDistance=0, pinchStartScale=1, lastDragPoint=null;
+const restrict=(value,min,max)=>Math.min(max,Math.max(min,value));
+function clampViewerPan(){
+  if(viewerScale<=1){viewerX=0;viewerY=0;return}
+  const maxX=Math.max(0,(viewerImage.clientWidth*viewerScale-viewerStage.clientWidth)/2);
+  const maxY=Math.max(0,(viewerImage.clientHeight*viewerScale-viewerStage.clientHeight)/2);
+  viewerX=restrict(viewerX,-maxX,maxX);
+  viewerY=restrict(viewerY,-maxY,maxY);
+}
+function paintViewer(){
+  clampViewerPan();
+  viewerImage.style.transform=`translate3d(${viewerX}px, ${viewerY}px, 0) scale(${viewerScale})`;
+  zoomReadout.textContent=`${Math.round(viewerScale*100)}%`;
+  zoomInButton.disabled=viewerScale>=5;
+  zoomOutButton.disabled=viewerScale<=1;
+  viewerStage.classList.toggle('is-zoomed',viewerScale>1);
+}
+function setViewerZoom(scale){viewerScale=restrict(scale,1,5);paintViewer()}
+function resetViewer(){viewerScale=1;viewerX=0;viewerY=0;viewerPointers.clear();pinchStartDistance=0;lastDragPoint=null;paintViewer()}
+function openImageViewer(url,name){
+  if(!url)return;
+  $('#viewerCaption').textContent=name||'Product image';
+  viewerImage.alt=name||'Product image';
+  viewerImage.removeAttribute('src');
+  resetViewer();
+  viewerImage.src=url;
+  if(!imageViewer.open)imageViewer.showModal();
+  $('#viewerClose').focus();
+}
+document.addEventListener('click',event=>{
+  const button=event.target.closest('[data-image-zoom]');
+  if(!button)return;
+  openImageViewer(button.dataset.imageZoom,button.dataset.imageName);
+});
+$('#viewerClose').addEventListener('click',()=>imageViewer.close());
+$('#viewerZoomIn').addEventListener('click',()=>setViewerZoom(viewerScale+.5));
+$('#viewerZoomOut').addEventListener('click',()=>setViewerZoom(viewerScale-.5));
+$('#viewerZoomReset').addEventListener('click',resetViewer);
+viewerImage.addEventListener('load',paintViewer);
+imageViewer.addEventListener('close',resetViewer);
+viewerStage.addEventListener('wheel',event=>{
+  if(!imageViewer.open)return;
+  event.preventDefault();
+  setViewerZoom(viewerScale+(event.deltaY<0?.25:-.25));
+},{passive:false});
+viewerStage.addEventListener('dblclick',()=>setViewerZoom(viewerScale>1?1:2));
+function pointerDistance(){const points=[...viewerPointers.values()];return points.length<2?0:Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y)}
+viewerStage.addEventListener('pointerdown',event=>{
+  if(event.button!==0&&event.pointerType==='mouse')return;
+  viewerStage.setPointerCapture(event.pointerId);
+  viewerPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+  if(viewerPointers.size===2){pinchStartDistance=pointerDistance();pinchStartScale=viewerScale;lastDragPoint=null}
+  else if(viewerPointers.size===1)lastDragPoint={x:event.clientX,y:event.clientY};
+});
+viewerStage.addEventListener('pointermove',event=>{
+  if(!viewerPointers.has(event.pointerId))return;
+  viewerPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+  if(viewerPointers.size>=2&&pinchStartDistance){setViewerZoom(pinchStartScale*pointerDistance()/pinchStartDistance);return}
+  if(viewerPointers.size===1&&viewerScale>1&&lastDragPoint){
+    viewerX+=event.clientX-lastDragPoint.x;
+    viewerY+=event.clientY-lastDragPoint.y;
+    paintViewer();
+  }
+  lastDragPoint={x:event.clientX,y:event.clientY};
+});
+function finishViewerPointer(event){
+  viewerPointers.delete(event.pointerId);
+  if(viewerPointers.size===1){lastDragPoint=[...viewerPointers.values()][0];pinchStartDistance=0}
+  else if(!viewerPointers.size){lastDragPoint=null;pinchStartDistance=0}
+}
+viewerStage.addEventListener('pointerup',finishViewerPointer);
+viewerStage.addEventListener('pointercancel',finishViewerPointer);
+window.addEventListener('resize',()=>{if(imageViewer.open)paintViewer()});
+document.addEventListener('keydown',event=>{
+  if(!imageViewer.open)return;
+  if(event.key==='+'||event.key==='='){event.preventDefault();setViewerZoom(viewerScale+.5)}
+  else if(event.key==='-'){event.preventDefault();setViewerZoom(viewerScale-.5)}
+  else if(event.key==='0'){event.preventDefault();resetViewer()}
+});
 $('#menuToggle').onclick=()=>$('#navLinks').classList.toggle('open');$$('#navLinks a').forEach(a=>a.onclick=()=>$('#navLinks').classList.remove('open'));$('#inqCategory').onchange=()=>fillInquiryBrands();$('#inqBrand').onchange=()=>fillInquiryProducts();$('#inquiryForm').onsubmit=submitInquiry;$('#trackingForm').onsubmit=trackInquiry;$('#openReview').onclick=()=>{const f=$('#reviewForm');f.reset();$('#reviewResult').innerHTML='';openDialog('reviewDialog')};$('#reviewForm').onsubmit=submitReview;$$('[data-close]').forEach(b=>b.onclick=()=>$('#'+b.dataset.close)?.close());document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close()}));
 function startCustomerAutoRefresh(){clearInterval(publicRefreshTimer);clearInterval(trackingRefreshTimer);publicRefreshTimer=setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('dialog[open]'))load(false)},PUBLIC_REFRESH_MS);trackingRefreshTimer=setInterval(()=>refreshTrackedInquiry(false),TRACK_REFRESH_MS)}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){load(false);refreshTrackedInquiry(false)}});
